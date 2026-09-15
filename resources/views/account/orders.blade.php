@@ -1,0 +1,4 @@
+@extends('layouts.app')
+@section('content')
+<div class="max-w-5xl mx-auto px-4 py-12 space-y-5"><h1 class="text-2xl font-black dark:text-white">Mis pedidos</h1><p class="text-sm text-slate-500">Tus consultas y pedidos realizados por WhatsApp aparecerán aquí cuando sean registrados.</p><div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border dark:border-slate-800 divide-y">@forelse($orders as $order)<div class="p-4 flex justify-between"><div><strong class="dark:text-white">{{ $order->order_number }}</strong><p class="text-xs text-slate-500">{{ $order->created_at->format('d/m/Y') }}</p></div><strong class="text-cyan-500">S/ {{ number_format($order->total, 2) }}</strong></div>@empty<div class="p-8 text-center text-slate-500">Todavía no tienes pedidos registrados.</div>@endforelse</div>{{ $orders->links() }}</div>
+@endsection

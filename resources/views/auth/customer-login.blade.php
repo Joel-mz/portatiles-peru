@@ -1,0 +1,4 @@
+@extends('layouts.app')
+@section('content')
+<div class="max-w-md mx-auto px-4 py-16"><form method="POST" action="{{ route('customer.login.store') }}" class="p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">@csrf<h1 class="text-2xl font-black dark:text-white">Ingresa a tu cuenta</h1><input name="email" type="email" required placeholder="Correo electrónico" class="w-full p-3 rounded-xl border dark:bg-slate-800"><input name="password" type="password" required placeholder="Contraseña" class="w-full p-3 rounded-xl border dark:bg-slate-800"><label class="text-xs"><input type="checkbox" name="remember"> Mantener sesión</label><button class="w-full p-3 rounded-xl bg-blue-600 text-white font-bold">Ingresar</button><p class="text-sm text-center">¿Aún no tienes cuenta? <a class="text-cyan-500 font-bold" href="{{ route('customer.register') }}">Regístrate</a></p></form></div>
+@endsection

@@ -1,0 +1,125 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    
+    --color-brand-cyan: #00f0ff;
+    --color-brand-blue: #2563eb;
+    --color-brand-dark: #080c14;
+    --color-brand-surface: #0f172a;
+    --color-brand-card: #141e33;
+    --color-brand-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Smooth Transitions & Tech Aesthetics */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    transition: background-color 0.25s ease, color 0.25s ease;
+    background-image: radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.07), transparent 26rem);
+}
+
+/* The storefront uses a crisp catalogue surface with the navy navigation from the brand system. */
+.dark body {
+    background-image: radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.08), transparent 26rem);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Compact operational UI inspired by the Nexora administration boards. */
+.admin-surface {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid #dbeafe;
+    box-shadow: 0 12px 28px -22px rgba(15, 64, 129, 0.42);
+}
+
+.admin-kpi {
+    border-radius: 1rem;
+    padding: 1.1rem;
+    background: linear-gradient(135deg, #ffffff, #f8fbff);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 24px -22px rgba(15, 64, 129, 0.5);
+}
+
+.admin-form {
+    background: linear-gradient(145deg, #ffffff 0%, #fbfdff 100%);
+    border-color: #cfe0fb;
+}
+
+.admin-form input:not([type='checkbox']),
+.admin-form select,
+.admin-form textarea {
+    border-color: #d7e3f4 !important;
+    background-color: #ffffff !important;
+    box-shadow: inset 0 1px 2px rgba(15, 64, 129, 0.03);
+}
+
+.admin-form input:not([type='checkbox']):focus,
+.admin-form select:focus,
+.admin-form textarea:focus {
+    border-color: #38bdf8 !important;
+    outline: 2px solid rgba(56, 189, 248, 0.18);
+    outline-offset: 0;
+}
+
+.admin-tab {
+    border-radius: 0.7rem 0.7rem 0 0;
+    padding: 0.65rem 0.8rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* High-tech glow utilities */
+.tech-glow-cyan {
+    box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.25);
+}
+
+.tech-glow-blue {
+    box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.3);
+}
+
+.tech-glow-green {
+    box-shadow: 0 0 25px -5px rgba(37, 211, 102, 0.3);
+}
+
+.glass-panel {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-light {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}

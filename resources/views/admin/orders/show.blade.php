@@ -1,0 +1,6 @@
+@extends('layouts.admin')
+@section('title', 'Pedido '.$order->order_number)
+@section('page_title', 'Pedido')
+@section('content')
+<div class="max-w-5xl mx-auto space-y-6"><a href="{{ route('admin.orders.index') }}" class="text-xs font-bold text-cyan-500">← Volver a pedidos</a><div class="rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 p-6 space-y-5"><div class="flex justify-between"><div><h1 class="text-xl font-black dark:text-white">Pedido {{ $order->order_number }}</h1><p class="text-xs text-slate-500">Gestionado directamente por WhatsApp</p></div><strong class="text-cyan-500">S/ {{ number_format($order->total, 2) }}</strong></div><div class="grid sm:grid-cols-2 gap-4 text-sm"><div><strong class="dark:text-white">Cliente</strong><p>{{ $order->customer_name }}</p><p>{{ $order->customer_email }}</p><p>{{ $order->customer_phone }}</p></div><div><strong class="dark:text-white">Entrega</strong><p>{{ $order->shipping_type === 'pickup' ? 'Recojo en tienda' : 'Envío' }}</p><p>{{ $order->address }}</p></div></div><div><strong class="dark:text-white">Productos</strong><ul class="mt-2 space-y-2">@foreach($order->items as $item)<li class="text-sm">{{ $item->quantity }} × {{ $item->product_name }} — S/ {{ number_format($item->subtotal, 2) }}</li>@endforeach</ul></div></div></div>
+@endsection
