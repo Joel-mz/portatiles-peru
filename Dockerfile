@@ -38,9 +38,6 @@ RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf &&
     echo '    CustomLog ${APACHE_LOG_DIR}/access.log combined' >> /etc/apache2/sites-available/000-default.conf && \
     echo '</VirtualHost>' >> /etc/apache2/sites-available/000-default.conf
 
-# Configurar DocumentRoot de Apache a la carpeta public de Laravel
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Establecer directorio de trabajo
 WORKDIR /var/www/html
@@ -66,6 +63,7 @@ RUN php artisan cache:clear
 
 # ¡CRÍTICO! Dar permisos a www-data DESPUÉS de ejecutar todos los comandos de artisan
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+
 
 
 
