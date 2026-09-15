@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     nodejs \
     npm \
-    sqlite3
+    sqlite3 \
+    libsqlite3-dev
 
 # Limpiar cache de apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -65,6 +66,7 @@ RUN php artisan cache:clear
 
 # ¡CRÍTICO! Dar permisos a www-data DESPUÉS de ejecutar todos los comandos de artisan
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+
 
 
 
