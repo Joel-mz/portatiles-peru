@@ -41,7 +41,6 @@ RUN cp .env.example .env
 RUN sed -i 's/DB_CONNECTION=mysql/DB_CONNECTION=sqlite/' .env
 RUN sed -i 's/# DB_DATABASE=laravel/DB_DATABASE=\/var\/www\/html\/database\/database.sqlite/' .env || echo "DB_DATABASE=/var/www/html/database/database.sqlite" >> .env
 RUN touch database/database.sqlite
-RUN chown -R www-data:www-data /var/www/html/database
 
 # Instalar dependencias de PHP y Node
 RUN composer install --no-dev --optimize-autoloader
@@ -50,7 +49,8 @@ RUN npm install && npm run build
 # Generar llave, ejecutar migraciones (seeding opcional) y optimizar para producción
 RUN php artisan key:generate --force
 RUN php artisan migrate --force --seed
-RUN php artisan optimize
+RUN php artisan config:clear
+RUN php artisan cache:clear
 
-# Permisos para Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# ¡CRÍTICO! Dar permisos a www-data DESPUÉS de ejecutar todos los comandos de artisan
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
