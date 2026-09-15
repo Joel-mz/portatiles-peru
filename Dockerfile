@@ -27,15 +27,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN a2enmod rewrite
 
 # Configurar VirtualHost con AllowOverride All
-RUN echo '<VirtualHost *:80>
-    DocumentRoot /var/www/html/public
-    <Directory /var/www/html/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-    ErrorLog $/error.log
-    CustomLog $/access.log combined
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+RUN echo '<VirtualHost *:80>\n    DocumentRoot /var/www/html/public\n    <Directory /var/www/html/public>\n        AllowOverride All\n        Require all granted\n    </Directory>\n    ErrorLog $/error.log\n    CustomLog $/access.log combined\n</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # Configurar DocumentRoot de Apache a la carpeta public de Laravel
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
@@ -65,4 +57,5 @@ RUN php artisan cache:clear
 
 # ¡CRÍTICO! Dar permisos a www-data DESPUÉS de ejecutar todos los comandos de artisan
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+
 
