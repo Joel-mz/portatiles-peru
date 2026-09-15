@@ -244,10 +244,18 @@ class ProductController extends Controller
     public function destroy(Product $product): RedirectResponse
     {
         $name = $product->name;
-        $product->delete();
-
-        return redirect()->route('admin.products.index')
-            ->with('success', "Producto {$name} eliminado.");
+        
+        try {
+            $product->delete();
+            return redirect()->route('admin.products.index')
+                ->with('success', "Producto {$name} eliminado.");
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('admin.products.index')
+                    ->with('error', "No se pudo eliminar el producto '{$name}' porque está asociado a pedidos o cotizaciones históricas.");
+            }
+            throw $e;
+        }
     }
 
     public function importCsv(Request $request): RedirectResponse
@@ -310,8 +318,32 @@ class ProductController extends Controller
             'product_ids.*' => 'exists:products,id',
         ]);
 
-        $count = Product::whereIn('id', $request->product_ids)->delete();
+        $deletedCount = 0;
+        $failedCount = 0;
 
-        return back()->with('success', "Se han eliminado {$count} productos correctamente.");
+        $products = Product::whereIn('id', $request->product_ids)->get();
+
+        foreach ($products as $product) {
+            try {
+                $product->delete();
+                $deletedCount++;
+            } catch (\Illuminate\Database\QueryException $e) {
+                if ($e->getCode() == 23000) {
+                    $failedCount++;
+                } else {
+                    throw $e;
+                }
+            }
+        }
+
+        if ($failedCount > 0) {
+            if ($deletedCount > 0) {
+                return back()->with('warning', "Se eliminaron {$deletedCount} productos, pero {$failedCount} no se pudieron eliminar por estar asociados a pedidos o cotizaciones.");
+            } else {
+                return back()->with('error', 'No se pudo eliminar ninguno de los productos seleccionados porque están asociados a registros históricos.');
+            }
+        }
+
+        return back()->with('success', "Se han eliminado {$deletedCount} productos correctamente.");
     }
 }
