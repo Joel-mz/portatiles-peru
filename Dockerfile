@@ -27,8 +27,8 @@ RUN a2enmod rewrite
 
 # Configurar DocumentRoot de Apache a la carpeta public de Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Establecer directorio de trabajo
 WORKDIR /var/www/html
