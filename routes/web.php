@@ -102,3 +102,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureAdminUser::cla
         Route::post('/respaldos/restaurar', [BackupController::class, 'restore'])->name('backups.restore');
     });
 });
+
+
+Route::get('/ver-logs', function () { return response(file_get_contents(storage_path('logs/laravel.log')))->header('Content-Type', 'text/plain'); });
