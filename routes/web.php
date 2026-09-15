@@ -69,6 +69,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureAdminUser::cla
     Route::get('/productos/{product}/editar', [AdminProductController::class, 'edit'])->name('products.edit');
     Route::put('/productos/{product}', [AdminProductController::class, 'update'])->name('products.update');
     Route::delete('/productos/{product}', [AdminProductController::class, 'destroy'])->name('products.destroy');
+    Route::post('/productos/eliminar-masivo', [AdminProductController::class, 'massDestroy'])->name('products.massDestroy');
     Route::post('/productos/importar-csv', [AdminProductController::class, 'importCsv'])->name('products.importCsv');
     Route::get('/productos/plantilla-csv', [AdminProductController::class, 'downloadCsvTemplate'])->name('products.downloadCsvTemplate');
     Route::get('/catalogo/{section}', CatalogLookupController::class)

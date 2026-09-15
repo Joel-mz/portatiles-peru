@@ -4,7 +4,21 @@
 @section('page_title', 'Productos')
 
 @section('content')
-<div class="space-y-6" x-data="{ csvModal: false }">
+<div class="space-y-6" x-data="{ 
+    csvModal: false, 
+    selectedProducts: [], 
+    selectAll: false,
+    toggleAll() {
+        this.selectedProducts = this.selectAll ? {{ $products->pluck('id')->toJson() }} : [];
+    }
+}">
+    <!-- Mass Delete Form -->
+    <form id="mass-delete-form" action="{{ route('admin.products.massDestroy') }}" method="POST" style="display: none;">
+        @csrf
+        <template x-for="id in selectedProducts" :key="id">
+            <input type="hidden" name="product_ids[]" :value="id">
+        </template>
+    </form>
 
     <!-- Top Action Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -16,6 +30,17 @@
         </div>
 
         <div class="flex items-center gap-3">
+            <button 
+                type="button" 
+                x-show="selectedProducts.length > 0"
+                x-cloak
+                @click="if(confirm('¿Estás seguro de eliminar ' + selectedProducts.length + ' productos? Esta acción no se puede deshacer.')) document.getElementById('mass-delete-form').submit()"
+                class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-500/20 transition flex items-center gap-2"
+            >
+                <x-icon name="trash" class="w-4 h-4" />
+                <span x-text="'Eliminar (' + selectedProducts.length + ')'"></span>
+            </button>
+
             <button 
                 type="button" 
                 @click="csvModal = true"
@@ -78,6 +103,9 @@
             <table class="w-full text-left text-xs border-collapse">
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-400 font-bold uppercase tracking-wider">
+                        <th class="py-3.5 px-4 w-10">
+                            <input type="checkbox" x-model="selectAll" @change="toggleAll" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800">
+                        </th>
                         <th class="py-3.5 px-4">Producto</th>
                         <th class="py-3.5 px-4">SKU</th>
                         <th class="py-3.5 px-4">Categoría / Marca</th>
@@ -91,6 +119,9 @@
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
                     @foreach($products as $product)
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition">
+                            <td class="py-3.5 px-4">
+                                <input type="checkbox" :value="{{ $product->id }}" x-model="selectedProducts" @change="if(!selectedProducts.includes({{ $product->id }})) selectAll = false" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800">
+                            </td>
                             <td class="py-3.5 px-4">
                                 <div class="flex items-center gap-3">
                                     <img src="{{ $product->main_image }}" alt="{{ $product->name }}" class="w-10 h-10 object-contain rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shrink-0">

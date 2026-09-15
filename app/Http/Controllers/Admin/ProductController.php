@@ -302,4 +302,16 @@ class ProductController extends Controller
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
+
+    public function massDestroy(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'product_ids' => 'required|array',
+            'product_ids.*' => 'exists:products,id',
+        ]);
+
+        $count = Product::whereIn('id', $request->product_ids)->delete();
+
+        return back()->with('success', "Se han eliminado {$count} productos correctamente.");
+    }
 }
