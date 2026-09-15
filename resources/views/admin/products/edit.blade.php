@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'Editar Producto: ' . $product->name)
-@section('page_title', 'Editar Producto')
+@section('title', 'Agregar / Editar Producto')
+@section('page_title', 'Agregar / Editar Producto')
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-6" x-data="{
+<div class="max-w-4xl mx-auto space-y-6" x-data="{
     tab: 'info',
     specs: [
         @if(!empty($product->technical_specs))
@@ -23,199 +23,222 @@
         this.specs.splice(index, 1);
     }
 }">
-    <div class="flex items-center justify-between">
+    <!-- Header -->
+    <div class="flex items-center justify-between text-white mb-2">
         <div>
-            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                Editar Producto: {{ $product->name }}
+            <h1 class="text-xl font-bold tracking-tight">
+                Agregar / Editar Producto
             </h1>
-            <p class="text-xs text-slate-500 font-mono">SKU: {{ $product->sku }}</p>
         </div>
-        <a href="{{ route('admin.products.index') }}" class="text-xs font-bold text-slate-400 hover:text-white">
-            ← Volver a productos
-        </a>
     </div>
 
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="admin-form p-5 sm:p-7 rounded-2xl dark:bg-[#0F172A] dark:border-slate-800/80 shadow-xl space-y-6">
+    @if($errors->any())
+        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-bold space-y-1">
+            <span class="block">Por favor corrige los errores señalados:</span>
+            <ul class="list-disc pl-5">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="bg-[#FDFBF7] rounded-xl overflow-hidden shadow-xl text-slate-800 text-sm">
         @csrf
         @method('PUT')
 
         <!-- Tabs Navigation -->
-        <div class="flex items-center space-x-6 border-b border-slate-200 dark:border-slate-800 pb-3 text-xs font-bold">
-            <button type="button" @click="tab = 'info'" class="admin-tab" :class="tab === 'info' ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600 -mb-3.5' : 'text-slate-400'">
-                Información General
+        <div class="flex items-center gap-2 pt-4 px-6 border-b border-[#F0EBE1]">
+            <button type="button" @click="tab = 'info'" class="px-5 py-2.5 rounded-t-xl font-semibold transition" :class="tab === 'info' ? 'bg-white text-blue-600 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] border-t border-l border-r border-[#F0EBE1]' : 'text-slate-500 hover:text-slate-700'">
+                Información general
             </button>
-            <button type="button" @click="tab = 'pricing'" class="admin-tab" :class="tab === 'pricing' ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600 -mb-3.5' : 'text-slate-400'">
-                Precios y Stock
+            <button type="button" @click="tab = 'images'" class="px-5 py-2.5 rounded-t-xl font-semibold transition" :class="tab === 'images' ? 'bg-white text-blue-600 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] border-t border-l border-r border-[#F0EBE1]' : 'text-slate-500 hover:text-slate-700'">
+                Galería de imágenes
             </button>
-            <button type="button" @click="tab = 'images'" class="admin-tab" :class="tab === 'images' ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600 -mb-3.5' : 'text-slate-400'">
-                Imágenes y Galería
-            </button>
-            <button type="button" @click="tab = 'specs'" class="admin-tab" :class="tab === 'specs' ? 'text-blue-600 bg-blue-50 border-b-2 border-blue-600 -mb-3.5' : 'text-slate-400'">
-                Especificaciones Técnicas
+            <button type="button" @click="tab = 'specs'" class="px-5 py-2.5 rounded-t-xl font-semibold transition" :class="tab === 'specs' ? 'bg-white text-blue-600 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] border-t border-l border-r border-[#F0EBE1]' : 'text-slate-500 hover:text-slate-700'">
+                Características
             </button>
         </div>
 
-        <!-- Tab 1: Info -->
-        <div x-show="tab === 'info'" class="space-y-4 text-xs">
-            <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-300">Nombre del Producto *</label>
-                <input type="text" name="name" value="{{ old('name', $product->name) }}" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Categoría *</label>
-                    <select name="category_id" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ $product->category_id == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
+        <div class="p-6 bg-white">
+            <!-- Tab 1: Info -->
+            <div x-show="tab === 'info'" class="space-y-5">
+                
+                <!-- Row 1 -->
+                <div class="space-y-1.5">
+                    <label class="font-medium text-slate-700 text-xs">Nombre del producto <span class="text-rose-500">*</span></label>
+                    <input type="text" name="name" value="{{ old('name', $product->name) }}" required placeholder="Laptop Lenovo IdeaPad 3" class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition">
                 </div>
 
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Marca *</label>
-                    <select name="brand_id" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-                        @foreach($brands as $b)
-                            <option value="{{ $b->id }}" {{ $product->brand_id == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Modelo</label>
-                    <input type="text" name="model" value="{{ old('model', $product->model) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-                </div>
-            </div>
-
-            <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-300">Descripción Corta</label>
-                <input type="text" name="short_description" value="{{ old('short_description', $product->short_description) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-            </div>
-
-            <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-300">Descripción Completa</label>
-                <textarea name="description" rows="5" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">{{ old('description', $product->description) }}</textarea>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-6 pt-2">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }} class="rounded text-cyan-500">
-                    <span class="font-bold">Producto Destacado en Inicio</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_offer" value="1" {{ $product->is_offer ? 'checked' : '' }} class="rounded text-rose-500">
-                    <span class="font-bold text-rose-500">En Oferta</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_new" value="1" {{ $product->is_new ? 'checked' : '' }} class="rounded text-cyan-500">
-                    <span class="font-bold text-cyan-500">Badge 'Nuevo'</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }} class="rounded text-emerald-500">
-                    <span class="font-bold text-emerald-500">Visible en Tienda</span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Tab 2: Pricing & Stock -->
-        <div x-show="tab === 'pricing'" class="space-y-4 text-xs">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">SKU Único *</label>
-                    <input type="text" name="sku" required value="{{ old('sku', $product->sku) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 uppercase font-mono font-bold text-slate-900 dark:text-white">
-                </div>
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Precio Regular (S/) *</label>
-                    <input type="number" step="0.01" name="price" required value="{{ old('price', $product->price) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold text-slate-900 dark:text-white">
-                </div>
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Precio Anterior / Tachado (S/)</label>
-                    <input type="number" step="0.01" name="original_price" value="{{ old('original_price', $product->original_price) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-slate-400">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Precio de Oferta Especial (S/)</label>
-                    <input type="number" step="0.01" name="offer_price" value="{{ old('offer_price', $product->offer_price) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-rose-500">
-                </div>
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Stock Físico Actual *</label>
-                    <input type="number" name="stock" required value="{{ old('stock', $product->stock) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold text-emerald-500">
-                </div>
-                <div class="space-y-1">
-                    <label class="font-bold text-slate-700 dark:text-slate-300">Stock Mínimo de Alerta</label>
-                    <input type="number" name="min_stock" value="{{ old('min_stock', $product->min_stock) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-amber-500">
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab 3: Images -->
-        <div x-show="tab === 'images'" class="space-y-4 text-xs">
-            <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                <img src="{{ $product->main_image }}" alt="{{ $product->name }}" class="w-20 h-20 object-contain rounded-xl bg-white dark:bg-slate-800 border">
-                <div>
-                    <span class="font-bold text-slate-800 dark:text-white block">Imagen Principal Actual</span>
-                    <span class="text-slate-400 text-[10px] break-all">{{ $product->main_image }}</span>
-                </div>
-            </div>
-
-            <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-300">Cambiar imagen de portada</label>
-                <input type="file" name="main_image_file" accept="image/*" class="w-full text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-blue-600 file:text-white file:font-semibold">
-            </div>
-
-            <div class="space-y-1">
-                <label class="font-bold text-slate-700 dark:text-slate-300">O URL Externa de Imagen</label>
-                <input type="url" name="main_image" value="{{ old('main_image', $product->main_image) }}" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-            </div>
-
-            @if($product->images->count() > 0)
-                <div class="grid grid-cols-4 sm:grid-cols-6 gap-3 pt-2">
-                    @foreach($product->images as $image)
-                        <img src="{{ $image->image_path }}" alt="{{ $product->name }}" class="aspect-square rounded-xl object-cover border border-slate-200 dark:border-slate-700">
-                    @endforeach
-                </div>
-            @endif
-            <div class="space-y-1 pt-3 border-t border-slate-200 dark:border-slate-800">
-                <label class="font-bold text-slate-700 dark:text-slate-300">Agregar imágenes a la galería</label>
-                <p class="text-[11px] text-slate-500">Selecciona hasta 8 imágenes adicionales.</p>
-                <input type="file" name="gallery_images[]" accept="image/*" multiple class="w-full text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-cyan-600 file:text-white file:font-semibold">
-            </div>
-        </div>
-
-        <!-- Tab 4: Dynamic Specs -->
-        <div x-show="tab === 'specs'" class="space-y-4 text-xs">
-            <div class="flex items-center justify-between">
-                <span class="font-bold text-slate-700 dark:text-slate-300">Atributos Clave - Valor</span>
-                <button type="button" @click="addSpec()" class="px-3 py-1 rounded-lg bg-cyan-600 text-white font-bold">
-                    + Agregar Atributo
-                </button>
-            </div>
-
-            <div class="space-y-2">
-                <template x-for="(spec, index) in specs" :key="index">
-                    <div class="flex items-center gap-3">
-                        <input type="text" name="specs_keys[]" x-model="spec.key" placeholder="Ej. Procesador" class="w-1/3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-                        <input type="text" name="specs_values[]" x-model="spec.value" placeholder="Ej. Intel Core i5-1235U" class="flex-1 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white">
-                        <button type="button" @click="removeSpec(index)" class="p-2 text-slate-400 hover:text-rose-500">
-                            <x-icon name="trash" class="w-4 h-4" />
-                        </button>
+                <!-- Row 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-1.5">
+                        <label class="font-medium text-slate-700 text-xs">Categoría <span class="text-rose-500">*</span></label>
+                        <select name="category_id" required class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                            <option value="">Seleccionar...</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ $product->category_id == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                </template>
+                    <div class="space-y-1.5">
+                        <label class="font-medium text-slate-700 text-xs">Subcategoría</label>
+                        <select name="subcategory_id" class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                            <option value="">Laptops 15"</option>
+                            <!-- TODO: Llenar subcategorías dinámicamente -->
+                        </select>
+                        <input type="hidden" name="sku" value="{{ old('sku', $product->sku) }}">
+                    </div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-1.5">
+                        <label class="font-medium text-slate-700 text-xs">Marca <span class="text-rose-500">*</span></label>
+                        <select name="brand_id" required class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                            <option value="">Seleccionar...</option>
+                            @foreach($brands as $b)
+                                <option value="{{ $b->id }}" {{ $product->brand_id == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="price" value="{{ old('price', $product->price) }}">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="font-medium text-slate-700 text-xs">Precio anterior</label>
+                        <input type="number" step="0.01" name="original_price" value="{{ old('original_price', $product->original_price) }}" placeholder="2999.00" class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                    <div class="space-y-1.5">
+                        <label class="font-medium text-slate-700 text-xs">Stock <span class="text-rose-500">*</span></label>
+                        <input type="number" name="stock" required value="{{ old('stock', $product->stock) }}" placeholder="10" class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="space-y-3 pt-4">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="is_offer" value="1" {{ $product->is_offer ? 'checked' : '' }} class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+                            <span class="text-slate-700 font-medium text-sm">Producto en oferta</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }} class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+                            <span class="text-slate-700 font-medium text-sm">Producto destacado</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="is_new" value="1" {{ $product->is_new ? 'checked' : '' }} class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+                            <span class="text-slate-700 font-medium text-sm">Producto nuevo</span>
+                        </label>
+                        <input type="hidden" name="is_active" value="1">
+                    </div>
+                </div>
+
+                <!-- Row 5 -->
+                <div class="space-y-1.5">
+                    <label class="font-medium text-slate-700 text-xs">Descripción <span class="text-rose-500">*</span></label>
+                    <textarea name="description" rows="3" required placeholder="Laptop ideal para el trabajo y estudio..." class="w-full p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none resize-none">{{ old('description', $product->description) }}</textarea>
+                </div>
+
+                <!-- Row 6: Mini Images preview inside info tab as per mockup -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                    <div>
+                        <label class="font-medium text-slate-700 text-xs block mb-2">Imagen principal</label>
+                        <div class="flex items-center gap-3">
+                            <div class="w-16 h-16 rounded-lg bg-slate-900 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200">
+                                @if($product->main_image)
+                                    <img src="{{ $product->main_image }}" class="w-full h-full object-cover">
+                                @else
+                                    <span class="text-white text-xs">Img</span>
+                                @endif
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex gap-2">
+                                    <label class="px-4 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-600 text-xs font-semibold cursor-pointer hover:bg-blue-100 transition">
+                                        Subir imagen
+                                        <input type="file" name="main_image_file" accept="image/*" class="hidden">
+                                    </label>
+                                    <button type="button" class="px-4 py-1.5 rounded-full border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 transition">
+                                        Subir URL
+                                    </button>
+                                </div>
+                                <input type="url" name="main_image" value="{{ old('main_image', $product->main_image) }}" placeholder="URL de imagen" class="w-full text-xs p-1.5 rounded-md border border-slate-200 text-slate-600 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-medium text-slate-700 text-xs block mb-2">Galería de imágenes</label>
+                        <div class="flex items-center gap-2">
+                            @foreach($product->images->take(3) as $img)
+                            <div class="w-14 h-14 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                                <img src="{{ $img->image_path }}" class="w-full h-full object-cover">
+                            </div>
+                            @endforeach
+                            @for($i = $product->images->count(); $i < 3; $i++)
+                            <div class="w-14 h-14 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                                <span class="text-slate-400 text-[10px]">Img {{ $i + 1 }}</span>
+                            </div>
+                            @endfor
+                            <label class="w-14 h-14 rounded-lg border border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-400 cursor-pointer transition">
+                                <x-icon name="plus" class="w-5 h-5" />
+                                <input type="file" name="gallery_images[]" accept="image/*" multiple class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- Tab 2: Images (Extended) -->
+            <div x-show="tab === 'images'" class="space-y-4" x-cloak>
+                <div class="p-8 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                    <x-icon name="image" class="w-8 h-8 mx-auto mb-2 text-slate-400" />
+                    <p class="text-sm font-medium">Las imágenes se han integrado en la pestaña de Información General según el nuevo diseño.</p>
+                </div>
+            </div>
+
+            <!-- Tab 3: Specs -->
+            <div x-show="tab === 'specs'" class="space-y-4" x-cloak>
+                <div class="flex items-center justify-between">
+                    <span class="font-medium text-slate-700">Atributos Clave - Valor</span>
+                    <button type="button" @click="addSpec()" class="px-3 py-1.5 rounded-lg border border-blue-200 text-blue-600 text-xs font-semibold hover:bg-blue-50 transition">
+                        + Agregar
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <template x-for="(spec, index) in specs" :key="index">
+                        <div class="flex items-center gap-3">
+                            <input type="text" name="specs_keys[]" x-model="spec.key" placeholder="Ej. Procesador" class="w-1/3 p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                            <input type="text" name="specs_values[]" x-model="spec.value" placeholder="Ej. Intel Core i5" class="flex-1 p-2.5 rounded-lg bg-white border border-slate-200 text-slate-800 focus:border-blue-500 outline-none">
+                            <button type="button" @click="removeSpec(index)" class="p-2 text-slate-400 hover:text-rose-500">
+                                <x-icon name="trash" class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Submit Button -->
-        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3">
-            <a href="{{ route('admin.products.index') }}" class="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs">
+        <!-- Footer Buttons -->
+        <div class="p-6 bg-white border-t border-slate-100 flex items-center gap-3">
+            <button type="submit" class="px-8 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] transition">
+                Guardar
+            </button>
+            <a href="{{ route('admin.products.index') }}" class="px-8 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition">
                 Cancelar
             </a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition">
-                Actualizar Producto
-            </button>
         </div>
 
     </form>
 </div>
+
+<style>
+/* Forzar estilos si el tema oscuro global está activo, ya que este diseño es forzosamente claro */
+.bg-\[\#FDFBF7\] { background-color: #FDFBF7 !important; }
+.bg-white { background-color: #ffffff !important; }
+.text-slate-800 { color: #1e293b !important; }
+.text-slate-700 { color: #334155 !important; }
+.border-slate-200 { border-color: #e2e8f0 !important; }
+.border-\[\#F0EBE1\] { border-color: #F0EBE1 !important; }
+</style>
 @endsection
